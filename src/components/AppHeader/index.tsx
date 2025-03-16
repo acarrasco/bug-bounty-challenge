@@ -1,7 +1,7 @@
 import { Grow, Box, Theme, Toolbar, Typography } from "@mui/material";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import { styled, useTheme } from "@mui/material/styles";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { User } from "../../api/services/User/store";
 import AvatarMenu from "../AvatarMenu";
@@ -19,20 +19,21 @@ const typoStyle = {
   display: "flex",
   alignContent: "center",
   justifyContent: "center",
-  lineHeight: 1
+  lineHeight: 1,
 };
 
 const AppBar = styled(MuiAppBar)<AppBarProps>(({ theme }) => ({
   zIndex: theme.zIndex.drawer + 1,
   backgroundColor: theme.palette.common.black,
   color: theme.palette.common.white,
-  height: theme.tokens.header.height
+  height: theme.tokens.header.height,
 }));
 
 const AppHeader = React.forwardRef((props: AppHeaderProps, ref) => {
   const { user, pageTitle } = props;
   const { t } = useTranslation("app");
   const theme = useTheme();
+  const startMs = useRef(Date.now());
 
   const [count, setCount] = useState(0);
   const hours = 1;
@@ -43,10 +44,12 @@ const AppHeader = React.forwardRef((props: AppHeaderProps, ref) => {
   const countdownSeconds = (countdown % 60).toFixed(0).padStart(2, "0");
 
   useEffect(() => {
-    setInterval(() => {
-      setCount((c) => c + 1);
+    const intervalId = setInterval(() => {
+      const elapsedMs = Date.now() - startMs.current;
+      setCount(Math.floor(elapsedMs / 1000));
     }, 1000);
-  }, []);
+    return () => clearInterval(intervalId);
+  });
 
   return (
     <AppBar ref={ref} position="fixed" sx={{ width: "100vw" }}>
@@ -63,7 +66,7 @@ const AppHeader = React.forwardRef((props: AppHeaderProps, ref) => {
               sx={{
                 ...typoStyle,
                 color: theme.palette.primary.main,
-                mb: theme.spacing(0.5)
+                mb: theme.spacing(0.5),
               }}
               variant="h6"
               component="div"
