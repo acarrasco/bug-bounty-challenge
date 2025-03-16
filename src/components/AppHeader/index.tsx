@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { User } from "../../api/services/User/store";
 import AvatarMenu from "../AvatarMenu";
+import { LanguageSelector } from "../LanguageSelector";
 
 interface AppBarProps extends MuiAppBarProps {
   theme?: Theme;
@@ -82,6 +83,7 @@ const AppHeader = React.forwardRef((props: AppHeaderProps, ref) => {
               {pageTitle.toLocaleUpperCase()}
             </Typography>
           </Box>
+          <LanguageSelector languages={["en", "de"]} />
           <Box sx={{ flex: 1, justifyContent: "flex-end", display: "flex" }}>
             {user && user.eMail && (
               <Grow in={Boolean(user && user.eMail)}>
